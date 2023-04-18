@@ -1,0 +1,10 @@
+server:
+  port:
+    api: 8888
+redis:
+  addr: 124.70.197.197:36379
+mysql:
+  username: root
+  password: DEK08ur7XxZtZfzN
+  host: 124.70.197.197
+  port: 33306
