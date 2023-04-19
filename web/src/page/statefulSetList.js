@@ -5,6 +5,7 @@ import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
 import { AppContext } from '../App';
+import SearchBar from '../component/SearchBar';
 
 const columns = ["name","namespace","pods", "replicas", "age"]   
 function createHandler(row) {
@@ -19,12 +20,14 @@ function StatefulSetList() {
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
     const [loading, setLoading] = React.useState(false);
+    const [searchName, setSearchName] = React.useState("");
 
     // 创建数据过滤器
     const dataFilter = new DataFilter();
 
     async function fetchData() {
         setLoading(true);
+        dataFilter.setNameFilter(searchName);
         dataFilter.setPage(current + 1);
         const result = await list.listStatefulSets(namespace,dataFilter.toJson());
         
@@ -51,9 +54,13 @@ function StatefulSetList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current,cluster,namespace]);
+    }, [current,cluster,namespace,searchName]);
 
     return (
+        <><SearchBar onSearchResource={(value)=>{
+            setCurrent(0);
+            setSearchName(value);
+        }}/>
         <PageinationTable 
             columns={columns} 
             data={data} 
@@ -65,6 +72,7 @@ function StatefulSetList() {
                 setCurrent(page);
             }}
         />
+        </>
     );
 }
 

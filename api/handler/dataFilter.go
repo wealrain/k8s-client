@@ -21,36 +21,6 @@ const (
 	FilterTypeBetween
 )
 
-type FilterResource string
-
-const (
-	FilterResourcePods                     FilterResource = "pods"
-	FilterResourceNodes                    FilterResource = "nodes"
-	FilterResourceNamespaces               FilterResource = "namespaces"
-	FilterResourceDeployments              FilterResource = "deployments"
-	FilterResourceServices                 FilterResource = "services"
-	FilterResourceIngresses                FilterResource = "ingresses"
-	FilterResourcePersistentVolumes        FilterResource = "persistentvolumes"
-	FilterResourcePersistentVolumeClaims   FilterResource = "persistentvolumeclaims"
-	FilterResourceStorageClasses           FilterResource = "storageclasses"
-	FilterResourceConfigMaps               FilterResource = "configmaps"
-	FilterResourceSecrets                  FilterResource = "secrets"
-	FilterResourceServiceAccounts          FilterResource = "serviceaccounts"
-	FilterResourceRoles                    FilterResource = "roles"
-	FilterResourceRoleBindings             FilterResource = "rolebindings"
-	FilterResourceClusterRoles             FilterResource = "clusterroles"
-	FilterResourceClusterRoleBindings      FilterResource = "clusterrolebindings"
-	FilterResourceCronJobs                 FilterResource = "cronjobs"
-	FilterResourceJobs                     FilterResource = "jobs"
-	FilterResourceDaemonSets               FilterResource = "daemonsets"
-	FilterResourceStatefulSets             FilterResource = "statefulsets"
-	FilterResourceReplicaSets              FilterResource = "replicasets"
-	FilterResourceReplicationControllers   FilterResource = "replicationcontrollers"
-	FilterResourceEvents                   FilterResource = "events"
-	FilterResourceEndpoints                FilterResource = "endpoints"
-	FilterResourceHorizontalPodAutoscalers FilterResource = "horizontalpodautoscalers"
-)
-
 type PageQuery struct {
 	PageNum  int `form:"pageNum" ` // 页码
 	PageSize int `form:"pageSize"` // 每页数量
@@ -97,10 +67,10 @@ type SortQuery struct {
 }
 */
 type DataFilter struct {
-	Resource    FilterResource `json:"resource"`
-	PageQuery   PageQuery      `json:"page"`
-	FilterQuery []FilterQuery  `json:"filters"`
-	SortQuery   SortQuery      `json:"sort"`
+	NameFilter  string        `json:"nameFilter"`
+	PageQuery   PageQuery     `json:"page"`
+	FilterQuery []FilterQuery `json:"filters"`
+	SortQuery   SortQuery     `json:"sort"`
 }
 
 // 绑定数据
@@ -119,6 +89,17 @@ func (d *DataFilter) Bind(c *gin.Context) error {
 
 // 对数据进行过滤
 func (d *DataFilter) Filter(data []interface{}) PaginationData {
+
+	// 根据名称模糊查询
+	if d.NameFilter != "" {
+		var result []interface{}
+		for _, item := range data {
+			if strings.Contains(objectToMap(item)["name"].(string), d.NameFilter) {
+				result = append(result, item)
+			}
+		}
+		data = result
+	}
 
 	// 根据数据获取过滤器
 	filters := d.getFilters()

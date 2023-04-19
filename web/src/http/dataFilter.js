@@ -1,13 +1,13 @@
 class DataFilter {
     constructor() {
-        this._resource = null;
+        this._nameFilter = null;
         this._filters = [];
         this._sort = null;
         this._page = null;
     }
 
-    setResource(resource) {
-        this._resource = resource;
+    setNameFilter(name) {
+        this._nameFilter = name;
     }
 
     addFilter(propertyName,filterType,value) {
@@ -34,8 +34,8 @@ class DataFilter {
 
     toJson() {
         let json = {};
-        if (this._resource) {
-            json.resource = this._resource;
+        if (this._nameFilter) {
+            json.nameFilter = this._nameFilter;
         }
         if (this._filters.length > 0) {
             json.filters = this._filters;
