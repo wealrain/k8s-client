@@ -4,7 +4,7 @@ import CommonHandler from './common'
 import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
-
+import { AppContext } from '../App';
 const columns = ["name","type", "keys", "age"]   
 
 function createHandler(row) {
@@ -15,6 +15,7 @@ function createHandler(row) {
 }
 
 function SecretList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -26,7 +27,7 @@ function SecretList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listSecrets('wuxi-dev',dataFilter.toJson());
+        const result = await list.listSecrets(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
@@ -42,7 +43,7 @@ function SecretList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <PageinationTable 

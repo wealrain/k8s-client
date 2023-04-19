@@ -11,10 +11,11 @@ import (
 )
 
 type Secret struct {
-	Name string   `json:"name"`
-	Age  int64    `json:"age"` // unix timestamp
-	Keys []string `json:"keys"`
-	Type string   `json:"type"`
+	Name      string   `json:"name"`
+	Namespace string   `json:"namespace"` // added
+	Age       int64    `json:"age"`       // unix timestamp
+	Keys      []string `json:"keys"`
+	Type      string   `json:"type"`
 }
 
 func GetSecretList(client k8sClient.Interface, namespace string) ([]Secret, error) {
@@ -38,10 +39,11 @@ func GetSecretList(client k8sClient.Interface, namespace string) ([]Secret, erro
 
 func toSecret(secret *corev1.Secret) Secret {
 	return Secret{
-		Name: secret.Name,
-		Age:  secret.CreationTimestamp.Unix(),
-		Keys: getKeys(secret.Data),
-		Type: string(secret.Type),
+		Name:      secret.Name,
+		Namespace: secret.Namespace,
+		Age:       secret.CreationTimestamp.Unix(),
+		Keys:      getKeys(secret.Data),
+		Type:      string(secret.Type),
 	}
 }
 

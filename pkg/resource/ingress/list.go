@@ -11,6 +11,7 @@ import (
 
 type Ingress struct {
 	Name         string `json:"name"`
+	Namespace    string `json:"namespace"`
 	LoadBalancer string `json:"loadBalancer"`
 	Age          int64  `json:"age"`
 }
@@ -40,6 +41,7 @@ func toIngress(ingress *netv1.Ingress) Ingress {
 
 	return Ingress{
 		Name:         ingress.Name,
+		Namespace:    ingress.Namespace,
 		LoadBalancer: strings.Join(GetLoadBalancer(ingress), ","),
 		Age:          ingress.CreationTimestamp.Time.Unix(),
 	}

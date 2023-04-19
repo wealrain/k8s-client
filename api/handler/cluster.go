@@ -21,7 +21,7 @@ func HandleAddCluster(c *gin.Context) {
 		return
 	}
 
-	err = cluster.AddCluster(clus)
+	err = cluster.AddCluster(&clus)
 	if err != nil {
 		if _, ok := err.(*errors.ClusterError); ok {
 			c.JSON(400, gin.H{
@@ -36,15 +36,13 @@ func HandleAddCluster(c *gin.Context) {
 	// 根据config的内容获取集群信息
 	clientManager, err := client.NewClientManager(fmt.Sprintf("cluster-%d", clus.Id), clus.Config)
 	if err != nil {
-		clus.Status = "error"
-		cluster.UpdateCluster(clus)
+		cluster.DeleteCluster(fmt.Sprintf("%d", clus.Id))
 		c.JSON(400, gin.H{"error": "集群配置错误"})
 		return
 	}
 	discoveryClient, err := discovery.NewDiscoveryClientForConfig(clientManager.Config)
 	if err != nil {
-		clus.Status = "error"
-		cluster.UpdateCluster(clus)
+		cluster.DeleteCluster(fmt.Sprintf("%d", clus.Id))
 		c.JSON(400, gin.H{"error": "集群配置错误"})
 		return
 	}
@@ -54,7 +52,7 @@ func HandleAddCluster(c *gin.Context) {
 	if err != nil {
 		clus.Status = "running"
 		clus.Version = "unknown"
-		cluster.UpdateCluster(clus)
+		cluster.UpdateCluster(&clus)
 		c.JSON(200, gin.H{
 			"message": "success",
 		})
@@ -63,7 +61,7 @@ func HandleAddCluster(c *gin.Context) {
 
 	clus.Version = version.Major + "." + version.Minor
 	clus.Status = "running"
-	cluster.UpdateCluster(clus)
+	cluster.UpdateCluster(&clus)
 	c.JSON(200, gin.H{
 		"message": "success",
 	})
@@ -94,7 +92,7 @@ func HandleUpdateCluster(c *gin.Context) {
 		})
 		return
 	}
-	err = cluster.UpdateCluster(clus)
+	err = cluster.UpdateCluster(&clus)
 	if err != nil {
 		c.JSON(500, gin.H{"error": "Internal Server Error"})
 		return
@@ -105,7 +103,7 @@ func HandleUpdateCluster(c *gin.Context) {
 		clientManager, err := client.NewClientManager(fmt.Sprintf("cluster-%d", clus.Id), clus.Config)
 		if err != nil {
 			clus.Status = "error"
-			cluster.UpdateCluster(clus)
+			cluster.UpdateCluster(&clus)
 			c.JSON(400, gin.H{"error": "集群配置错误"})
 			return
 		}
@@ -113,7 +111,7 @@ func HandleUpdateCluster(c *gin.Context) {
 		version := clientManager.Config.GroupVersion.Version
 		clus.Version = version
 		clus.Status = "running"
-		cluster.UpdateCluster(clus)
+		cluster.UpdateCluster(&clus)
 	}
 
 	c.JSON(200, gin.H{

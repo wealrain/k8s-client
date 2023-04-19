@@ -101,16 +101,7 @@ function Menu() {
 
   return (
   <div>
-    {/* <AppBar>
-      <Toolbar >
-        <Typography variant="h6" noWrap component="div" >
-          wuxi-dev      
-        </Typography>
-       </Toolbar>
-    </AppBar> */}
-    
     <Divider />
-    {/* <Toolbar /> */}
     <List>
       {menus.map((menu, index) => (
         <MenuItem 

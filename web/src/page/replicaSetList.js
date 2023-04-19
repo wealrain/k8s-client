@@ -4,8 +4,8 @@ import CommonHandler from './common'
 import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
-
-const columns = ["name","desired", "current", "ready","age"]   
+import { AppContext } from '../App';
+const columns = ["name","namespace","desired", "current", "ready","age"]   
 
 function createHandler(row) {
     return [
@@ -15,6 +15,7 @@ function createHandler(row) {
 }
 
 function ReplicaSetList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -26,10 +27,11 @@ function ReplicaSetList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listReplicasets('wuxi-dev',dataFilter.toJson());
+        const result = await list.listReplicasets(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
+                namespace: item.namespace,
                 desired: item.desired,
                 current: item.current,
                 ready: item.ready,
@@ -43,7 +45,7 @@ function ReplicaSetList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <PageinationTable 

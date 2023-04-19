@@ -9,11 +9,12 @@ import (
 )
 
 type ReplicaSet struct {
-	Name    string `json:"name"`
-	Desired int32  `json:"desired"`
-	Current int32  `json:"current"`
-	Ready   int32  `json:"ready"`
-	Age     int64  `json:"age"`
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Desired   int32  `json:"desired"`
+	Current   int32  `json:"current"`
+	Ready     int32  `json:"ready"`
+	Age       int64  `json:"age"`
 }
 
 func GetReplicaSetList(client k8sClient.Interface, namespace string) ([]ReplicaSet, error) {
@@ -39,11 +40,12 @@ func GetReplicaSetList(client k8sClient.Interface, namespace string) ([]ReplicaS
 
 func toReplicaSet(replicaSet *appv1.ReplicaSet) ReplicaSet {
 	return ReplicaSet{
-		Name:    replicaSet.Name,
-		Desired: *replicaSet.Spec.Replicas,
-		Current: replicaSet.Status.Replicas,
-		Ready:   replicaSet.Status.ReadyReplicas,
-		Age:     replicaSet.CreationTimestamp.Unix(),
+		Name:      replicaSet.Name,
+		Namespace: replicaSet.Namespace,
+		Desired:   *replicaSet.Spec.Replicas,
+		Current:   replicaSet.Status.Replicas,
+		Ready:     replicaSet.Status.ReadyReplicas,
+		Age:       replicaSet.CreationTimestamp.Unix(),
 	}
 }
 

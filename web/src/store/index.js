@@ -17,7 +17,6 @@ class Storage {
             value,
             expire: new Date().getTime() + (expire || DEFAULT_CACHE_TIME),
         })
-        console.log('set item', data)
         this.storage.setItem(this.getKey(key), data)
     }
     
@@ -26,10 +25,8 @@ class Storage {
         if (!data) {
             return null
         }
-        console.log('get item', data)
         const { value, expire } = JSON.parse(data)
         if (new Date().getTime() > expire) {
-            console.log('item expired')
             this.removeItem(key)
             return null
         }

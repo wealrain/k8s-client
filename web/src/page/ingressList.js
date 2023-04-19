@@ -4,8 +4,9 @@ import CommonHandler from './common'
 import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
+import { AppContext } from '../App';
 
-const columns = ["name","loadBalancer", "age"]   
+const columns = ["name","namespace","loadBalancer", "age"]   
 
 function createHandler(row) {
     return [
@@ -15,6 +16,7 @@ function createHandler(row) {
 }
 
 function IngressList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -26,10 +28,11 @@ function IngressList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listIngresses('wuxi-dev',dataFilter.toJson());
+        const result = await list.listIngresses(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
+                namespace: item.namespace,
                 loadBalancer: item.loadBalancer,
                 age: timeDifference(item.age)
                 }
@@ -41,7 +44,7 @@ function IngressList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <PageinationTable 

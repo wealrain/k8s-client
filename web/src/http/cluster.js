@@ -16,7 +16,10 @@ function updateCluster(data) {
 }
 
 function deleteCluster(id) {
-   return http.delete(`/cluster/${id}`);
+   return http.delete(`/cluster/delete/${id}`,null,{
+      needShowSuccessMsg:true,
+      msg: "delete cluster success"
+   });
 }
 
 export default {

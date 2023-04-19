@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"k8s-client/pkg/resource/configmap"
 	"k8s-client/pkg/resource/deployment"
 	"k8s-client/pkg/resource/endpoint"
@@ -15,7 +16,29 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+func HandleGetNamespaces(c *gin.Context) {
+
+	client := managerK8SClient(c)
+	// 获取支持的namespace
+	namespace, err := client.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
+	if err != nil {
+		kubeconfig := managerK8SKubeconfig(c)
+		context := kubeconfig.Contexts[kubeconfig.CurrentContext]
+		namespaces := []string{context.Namespace}
+		c.JSON(200, namespaces)
+		return
+	}
+	var namespaces []string
+	for _, ns := range namespace.Items {
+		namespaces = append(namespaces, ns.Name)
+	}
+
+	c.JSON(200, namespaces)
+
+}
 
 // HandleGetPods handles the GET /pods endpoint
 func HandleGetPods(c *gin.Context) {

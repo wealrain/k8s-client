@@ -4,18 +4,17 @@ import (
 	"fmt"
 	"k8s-client/api/client"
 	"k8s-client/pkg/cluster"
-	"log"
 
 	"github.com/gin-gonic/gin"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 func manager(c *gin.Context) *client.ClientManager {
 	// 通过id查看集群是否存在
 	id := c.Param("cluster")
-	log.Printf("cluster-%s", id)
-	clientManager := client.ClientManagerMapInstance.GetClientManager(id)
+	clientManager := client.ClientManagerMapInstance.GetClientManager(fmt.Sprintf("cluster-%s", id))
 	if clientManager == nil {
 		clus, err := cluster.GetClusterById(id)
 		if err != nil {
@@ -29,7 +28,6 @@ func manager(c *gin.Context) *client.ClientManager {
 			c.Abort()
 			return nil
 		}
-		log.Printf("cluster-%d", clus.Id)
 		clientManager, err = client.NewClientManager(fmt.Sprintf("cluster-%d", clus.Id), clus.Config)
 
 		if err != nil {
@@ -53,4 +51,8 @@ func managerK8SClient(c *gin.Context) kubernetes.Interface {
 
 func managerK8SVerber(c *gin.Context) *client.Verber {
 	return manager(c).VerberClient
+}
+
+func managerK8SKubeconfig(c *gin.Context) *api.Config {
+	return manager(c).KubeConfig
 }

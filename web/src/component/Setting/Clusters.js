@@ -8,15 +8,78 @@ import {
     Paper,
     IconButton,
 } from '@mui/material';
+import MoreVertBtn from '../MoreVertBtn';
+import clusterHttp from '../../http/cluster'
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
-
-import { useState } from 'react';
+import { BookmarkAddedOutlined, DeleteOutlineOutlined } from '@mui/icons-material';
+import { useState,useEffect,useContext } from 'react';
 import AddCluster from './AddCluster';
+import { setCurrentCluster,setCurrentClusterName,currentCluster } from '../../store/cluster';
+import { AppContext } from '../../App';
+
+function chooseClusterHandler(row,setCurrentChoose,setCluster) {
+  return {
+    title: 'choose',
+    icon: <BookmarkAddedOutlined />,
+    handle: () => {
+        setCurrentCluster(row.id);
+        setCurrentClusterName(row.name);
+        setCurrentChoose(row.id);
+        setCluster(row.id);
+    }
+  }
+}
+
+function deleteClusterHandler(row,setRows) {
+  return {
+    title: 'Delete',
+    icon: <DeleteOutlineOutlined />,
+    handle: () => {
+        return new Promise((resolve,reject) => {
+            clusterHttp.deleteCluster(row.id).then(res => {
+                getClusterList(setRows);
+                resolve(res);
+            }).catch(err => {
+                reject(err);
+            })
+        })
+    }
+  }
+}
+
+
+
+function createHandler(row,setRows,setCurrentChoose,setCluster) {
+  return [
+    chooseClusterHandler(row,setCurrentChoose,setCluster),
+    deleteClusterHandler(row,setRows),
+  ]
+}
+
+const getClusterList = async (setRows) => {
+  const res = await clusterHttp.listClusters();
+  let items = res.map((item)=>{
+    return {
+      name:item.name,
+      id: item.id,
+      version: item.version,
+      status: item.status
+    }
+  })
+  setRows(items);
+}
 
 export default function Clusters() {
-
+    const {setCluster} = useContext(AppContext)
     const [rows, setRows] = useState([])
     const [openAdd, setOpenAdd] = useState(false)
+    const [currentChoose, setCurrentChoose] = useState(null)
+
+    useEffect(() => {
+      getClusterList(setRows);
+      setCurrentChoose(currentCluster());
+    }, [currentChoose]);
+
     return (
         <>
         <div style={{
@@ -33,28 +96,35 @@ export default function Clusters() {
                 <AddCircleOutlineIcon />
             </IconButton>
         </div>
-        <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} size="small">
+        <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+      <Table stickyHeader  sx={{ minWidth: 650 }} size="small">
         <TableHead>
-          <TableRow sx={{
-            backgroundColor:"rgba(100,100,100,0.1)"
-          }}>
-            <TableCell>Name</TableCell>
-            <TableCell>Version</TableCell>
-            <TableCell>Status</TableCell>
+          <TableRow >
+            <TableCell sx={{ fontWeight: 'bold' }}>Name</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Version</TableCell>
+            <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+            <TableCell></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {rows.map((row) => (
             <TableRow
               key={row.name}
-              sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+              sx={{ '&:last-child td, &:last-child th': { border: 0 },
+                backgroundColor: row.id === currentChoose ? '#0072E5' : 'white',
+                
+              }}
             >
-              <TableCell component="th" scope="row">
+              <TableCell 
+                sx={{ color: row.id === currentChoose ? 'white' : 'black' }}
+                component="th" scope="row">
                 {row.name}
               </TableCell>
-              <TableCell>{row.version}</TableCell>
-              <TableCell>{row.status}</TableCell>
+              <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }}>{row.version}</TableCell>
+              <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }}>{row.status}</TableCell>
+              <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }} align='right' width={1}>
+                  <MoreVertBtn items={createHandler(row,setRows,setCurrentChoose,setCluster)} />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

@@ -1,6 +1,7 @@
 package client
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"sync"
@@ -8,7 +9,10 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd/api"
 )
+
+const CLUSTER_CONFIG_PATH = "cluster_config"
 
 type ClientManagerMap struct {
 	ClientMap map[string]*ClientManager
@@ -18,6 +22,7 @@ type ClientManagerMap struct {
 type ClientManager struct {
 	Client       kubernetes.Interface
 	Config       *rest.Config
+	KubeConfig   *api.Config
 	VerberClient *Verber
 }
 
@@ -53,7 +58,7 @@ func NewClientManager(id, config string) (*ClientManager, error) {
 
 func (c *ClientManager) initClient(id, configContent string) error {
 	// 判断配置文件是否存在，文件名config-cluster-id
-	file, err := os.Create("config-" + id)
+	file, err := os.Create(fmt.Sprintf("%s/config-%s", CLUSTER_CONFIG_PATH, id))
 	if err != nil {
 		return err
 	}
@@ -63,11 +68,18 @@ func (c *ClientManager) initClient(id, configContent string) error {
 		return err
 	}
 	file.Close()
-	config, err := clientcmd.BuildConfigFromFlags("", "config-"+id)
+	config, err := clientcmd.BuildConfigFromFlags("", fmt.Sprintf("%s/config-%s", CLUSTER_CONFIG_PATH, id))
 	if err != nil {
 		log.Println(err)
 		return err
 	}
+
+	kubeconfig, err := clientcmd.LoadFromFile(fmt.Sprintf("%s/config-%s", CLUSTER_CONFIG_PATH, id))
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	c.KubeConfig = kubeconfig
 	client, err := kubernetes.NewForConfig(config)
 	if err != nil {
 		log.Println(err)

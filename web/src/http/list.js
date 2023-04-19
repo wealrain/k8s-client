@@ -1,6 +1,12 @@
 import http from ".";
 import { currentCluster } from "../store/cluster";
 
+const listNamespace= () =>  {
+    return http.get(`/list/${currentCluster()}/namespace` ,null,null,{
+        needShowErrorMsg:true
+    });
+};
+
 const listPods = (namespace,dataFilter) =>  {
     return http.post(`/list/${currentCluster()}/pods/` + namespace,dataFilter,null,{
         needShowErrorMsg:true
@@ -71,5 +77,6 @@ export default {
     listEndpoints,
     listConfigmaps,
     listSecrets,
-    listEvents
+    listEvents,
+    listNamespace
 };

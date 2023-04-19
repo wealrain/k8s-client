@@ -13,7 +13,7 @@ import {
 } from '@mui/material';
 import clusterHttp from '../../http/cluster'
 import AddCluster from '../Setting/AddCluster';
-import { setCurrentCluster } from '../../store/cluster';
+import { setCurrentCluster,setCurrentClusterName } from '../../store/cluster';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -26,10 +26,11 @@ export default function ChooseCluster(props) {
   const [clusterList, setClusterList] = React.useState([]);
 
   const handleChange = (event) => {
-    console.log(event.target.value);
     setCluster(event.target.value);
     setCurrentCluster(event.target.value);
-
+    clusterList.filter((item)=>item.id === event.target.value).map((item)=>{
+      setCurrentClusterName(item.name);
+    })
     setOpen(false);
   };
 

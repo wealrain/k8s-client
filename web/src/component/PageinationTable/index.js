@@ -71,7 +71,10 @@ function PageinationTable(props) {
             <TableHead>
               <TableRow>
                 { columns.map((column,index) => (
-                    <TableCell key={index}>{column}</TableCell>
+                    <TableCell key={index}
+                      sx={{ fontWeight: 'bold' }}
+                      >{column.toUpperCase()}
+                    </TableCell>
                 ))}
                 <TableCell> 
                 </TableCell>

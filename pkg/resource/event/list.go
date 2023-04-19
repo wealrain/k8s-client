@@ -10,6 +10,7 @@ import (
 
 type Event struct {
 	Type          string `json:"type"` // Event type, warning or normal
+	Namespace     string `json:"namespace"`
 	Message       string `json:"message"`
 	Source        string `json:"source"`
 	Count         int32  `json:"count"`
@@ -51,6 +52,7 @@ func toEvent(event *corev1.Event) Event {
 	}
 	return Event{
 		Type:          FillEventType(event),
+		Namespace:     event.Namespace,
 		Message:       event.Message,
 		Source:        event.Source.Component,
 		Count:         event.Count,

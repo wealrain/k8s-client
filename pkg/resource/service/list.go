@@ -11,6 +11,7 @@ import (
 
 type Service struct {
 	Name       string `json:"name"`
+	Namespace  string `json:"namespace"`
 	Type       string `json:"type"`
 	ClusterIP  string `json:"clusterIP"`
 	ExternalIP string `json:"externalIP"`
@@ -43,6 +44,7 @@ func toService(service *corev1.Service) Service {
 
 	return Service{
 		Name:       service.Name,
+		Namespace:  service.Namespace,
 		Type:       string(service.Spec.Type),
 		ClusterIP:  service.Spec.ClusterIP,
 		ExternalIP: strings.Join(GetExternalEndpoints(service), ","),

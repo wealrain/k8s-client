@@ -5,7 +5,7 @@ import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
 import PodDetail from '../component/detail/PodDetail';
-
+import { AppContext } from '../App';
 const columns = ["status","name","namespace", "node", "restarts", "age"]   
 
 function createHandler(row) {
@@ -19,6 +19,7 @@ function createHandler(row) {
 
 
 function PodList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -32,7 +33,7 @@ function PodList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listPods('wuxi-dev',dataFilter.toJson());
+        const result = await list.listPods(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 status: item.status,
@@ -50,7 +51,7 @@ function PodList() {
     
     React.useEffect(() => {
         fetchData();
-    }, []);
+    }, [current,cluster,namespace]);
 
     return (
         <>

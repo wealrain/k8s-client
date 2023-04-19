@@ -115,7 +115,6 @@ func handleSession(session sockjs.Session) {
 }
 
 func WaitFor(sessionId string) {
-	log.Printf("Wait for session %s", sessionId)
 	select {
 	case <-SockSessions.Get(sessionId).bound:
 		close(SockSessions.Get(sessionId).bound)
@@ -145,7 +144,6 @@ func process(session SockSession) error {
 }
 
 func logProcess(session SockSession) error {
-	log.Printf("log process %v", session)
 	stream, err := pod.GetLog(session.Client, session.Namespace, session.Name, session.Container)
 
 	if err != nil {
@@ -160,7 +158,6 @@ func logProcess(session SockSession) error {
 		if err != nil {
 			return err
 		}
-		log.Printf("log %s", string(buf[:n]))
 		session.Session.Send(string(buf[:n]))
 	}
 

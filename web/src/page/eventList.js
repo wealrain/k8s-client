@@ -3,7 +3,9 @@ import PageinationTable from '../component/PageinationTable';
 import CommonHandler from './common'
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
-const columns = ["type","message","source","count","firstSeen","lastSeen"]   
+import { AppContext } from '../App';
+
+const columns = ["type","namespace","message","source","count","firstSeen","lastSeen"]   
 
 function createHandler(row) {
     return [
@@ -13,6 +15,7 @@ function createHandler(row) {
 }
 
 function EventList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -24,10 +27,11 @@ function EventList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listEvents('wuxi-dev',dataFilter.toJson());
+        const result = await list.listEvents(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 type: item.type,
+                namespace: item.namespace,
                 message: item.message,
                 source: item.source,
                 count: item.count,
@@ -42,7 +46,7 @@ function EventList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <PageinationTable 

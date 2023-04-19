@@ -5,8 +5,8 @@ import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
 import ConfigmapDetail from '../component/detail/ConfigmapDetail';
-
-const columns = ["name","keys", "age"]   
+import { AppContext } from '../App';
+const columns = ["name","namespace","keys", "age"]   
 
 function createHandler(row) {
     return [
@@ -16,6 +16,7 @@ function createHandler(row) {
 }
 
 function ConfigMapList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -28,7 +29,7 @@ function ConfigMapList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listConfigmaps('wuxi-dev',dataFilter.toJson());
+        const result = await list.listConfigmaps(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
@@ -44,7 +45,7 @@ function ConfigMapList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <>

@@ -3,6 +3,7 @@ package cluster
 import (
 	"k8s-client/config"
 	"k8s-client/pkg/errors"
+	"log"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -28,12 +29,12 @@ func GetDBConnection(database string) *gorm.DB {
 }
 
 type Cluster struct {
-	Id       int    `json:"id" column:"id"`             // 集群ID
-	Name     string `json:"name" column:"name"`         // 集群名称
-	Config   string `json:"config" column:"config"`     // 集群配置文件路径
-	Version  string `json:"version" column:"version"`   // 集群版本
-	Password string `json:"password" column:"password"` // 集群密码
-	Status   string `json:"status" column:"status"`     // 是否启用
+	Id       int    `json:"id" column:"id" gorm:"primary_key;AUTO_INCREMENT"` // 集群ID
+	Name     string `json:"name" column:"name"`                               // 集群名称
+	Config   string `json:"config" column:"config"`                           // 集群配置文件路径
+	Version  string `json:"version" column:"version"`                         // 集群版本
+	Password string `json:"password" column:"password"`                       // 集群密码
+	Status   string `json:"status" column:"status"`                           // 是否启用
 }
 
 func clusterDatabase() *gorm.DB {
@@ -58,7 +59,7 @@ func GetClusterList() ([]Cluster, error) {
 	return clusters, db.Error
 }
 
-func AddCluster(cluster Cluster) error {
+func AddCluster(cluster *Cluster) error {
 	db := clusterDatabase()
 	exist, err := CheckClusterExist(cluster.Name)
 	if err != nil {
@@ -69,11 +70,16 @@ func AddCluster(cluster Cluster) error {
 		return errors.NewClusterError("集群已存在")
 	}
 
-	db.Create(&cluster)
-	return db.Error
+	result := db.Create(&cluster)
+	if result.Error != nil {
+		return result.Error
+	}
+	log.Printf("cluster: %v", cluster)
+	return nil
 }
 
-func UpdateCluster(cluster Cluster) error {
+func UpdateCluster(cluster *Cluster) error {
+	log.Printf("cluster: %v", cluster)
 	db := clusterDatabase()
 	db.Save(&cluster)
 	return db.Error

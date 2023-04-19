@@ -11,6 +11,7 @@ import (
 
 type Endpoint struct {
 	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
 	Endpoints string `json:"endpoints"`
 	Age       int64  `json:"age"`
 }
@@ -40,6 +41,7 @@ func toEndpoint(endpoint *corev1.Endpoints) Endpoint {
 
 	return Endpoint{
 		Name:      endpoint.Name,
+		Namespace: endpoint.Namespace,
 		Endpoints: strings.Join(GetEndpointAddresses(endpoint), ","),
 		Age:       endpoint.CreationTimestamp.Time.Unix(),
 	}

@@ -4,8 +4,8 @@ import CommonHandler from './common';
 import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
-
-const columns = ["name","endpoints", "age"]   
+import { AppContext } from '../App';
+const columns = ["name","namespace","endpoints", "age"]   
 
 function createHandler(row) {
     return [
@@ -15,6 +15,7 @@ function createHandler(row) {
 }
 
 function EndpointList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -26,10 +27,11 @@ function EndpointList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listEndpoints('wuxi-dev',dataFilter.toJson());
+        const result = await list.listEndpoints(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
+                namespace: item.namespace,
                 endpoints: item.endpoints,
                 age: timeDifference(item.age)
                 }
@@ -41,7 +43,7 @@ function EndpointList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <PageinationTable 

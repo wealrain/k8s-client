@@ -10,10 +10,11 @@ import (
 )
 
 type StatefulSet struct {
-	Name     string `json:"name"`
-	Pods     string `json:"pods"`
-	Age      int64  `json:"age"`
-	Replicas int32  `json:"replicas"`
+	Name      string `json:"name"`
+	Namespace string `json:"namespace"`
+	Pods      string `json:"pods"`
+	Age       int64  `json:"age"`
+	Replicas  int32  `json:"replicas"`
 }
 
 func GetStatefulSetList(client k8sClient.Interface, namespace string) ([]StatefulSet, error) {
@@ -43,10 +44,11 @@ func toStatefulSet(statefulSet *appv1.StatefulSet) StatefulSet {
 	totalPods := statefulSet.Status.Replicas
 
 	return StatefulSet{
-		Name:     statefulSet.Name,
-		Pods:     fmt.Sprintf("%d/%d", readyPods, totalPods),
-		Age:      statefulSet.CreationTimestamp.Unix(),
-		Replicas: statefulSet.Status.Replicas,
+		Name:      statefulSet.Name,
+		Namespace: statefulSet.Namespace,
+		Pods:      fmt.Sprintf("%d/%d", readyPods, totalPods),
+		Age:       statefulSet.CreationTimestamp.Unix(),
+		Replicas:  statefulSet.Status.Replicas,
 	}
 }
 

@@ -7,11 +7,15 @@ import { currentCluster } from './store/cluster';
 import ChooseCluster from './component/ChooseCluster';
 import * as React from 'react';
 
+export const AppContext = React.createContext(null);
 
 function App() {
   const [open, setOpen] = React.useState(false);
-  let cluster = currentCluster()
+  const [cluster, setCluster] = React.useState(null);
+  const [namespace,setNamespace] = React.useState(null);
+
   React.useEffect(() => {
+    setCluster(currentCluster());
     if(!cluster){
       setOpen(true)
     } else {
@@ -20,8 +24,10 @@ function App() {
   }, [cluster])
   return (
     <HttpProvider>
+        <AppContext.Provider value={{cluster,setCluster,namespace,setNamespace}}>
         <RouterProvider router={router} />
         <ChooseCluster open={open} setOpen={setOpen}/>
+        </AppContext.Provider>
     </HttpProvider>
   );
 }

@@ -5,8 +5,8 @@ import { timeDifference } from '../util';
 import list from '../http/list';
 import DataFilter from '../http/dataFilter';
 import DeploymentDetail from '../component/detail/DeploymentDetail';
-
-const columns = ["name","pods", "replicas", "age"]   
+import { AppContext } from '../App';
+const columns = ["name","namespace","pods", "replicas", "age"]   
 
 function createHandler(row) {
     return [
@@ -20,6 +20,7 @@ function createHandler(row) {
 }
 
 function DeploymentList() {
+    const {cluster,namespace} = React.useContext(AppContext);
     const [data, setData] = React.useState([]);
     const [total, setTotal] = React.useState(0);
     const [current, setCurrent] = React.useState(0); // MUI page start from 0
@@ -33,7 +34,7 @@ function DeploymentList() {
     async function fetchData() {
         setLoading(true);
         dataFilter.setPage(current + 1);
-        const result = await list.listDeployments('wuxi-dev',dataFilter.toJson());
+        const result = await list.listDeployments(namespace,dataFilter.toJson());
         setData(result.list.map(item => {
             return {
                 name: item.name,
@@ -50,7 +51,7 @@ function DeploymentList() {
     
     React.useEffect(() => {
         fetchData();
-    }, [current]);
+    }, [current,cluster,namespace]);
 
     return (
         <>

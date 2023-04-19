@@ -20,6 +20,7 @@ func list(r *gin.Engine) {
 	api.POST("/:cluster/configmaps/:namespace", handler.HandleGetConfigMaps)
 	api.POST("/:cluster/secrets/:namespace", handler.HandleGetSecrets)
 	api.POST("/:cluster/events/:namespace", handler.HandleGetEvents)
+	api.GET("/:cluster/namespace", handler.HandleGetNamespaces)
 }
 
 func op(r *gin.Engine) {
@@ -34,11 +35,11 @@ func op(r *gin.Engine) {
 }
 
 func log(r *gin.Engine) {
-	r.GET("/:cluster/logs/*any", gin.WrapH(handler.CreateAttachHandler("/logs")))
-	r.GET("/:cluster/log/session/:namespace/:name/:container", handler.HandleGetPodLog)
-	r.GET("/:cluster/log/session/:namespace/:name/", handler.HandleGetPodLog)
-	r.GET("/:cluster/log/download/:namespace/:name/:container", handler.HandleDownloadPodLog)
-	r.GET("/:cluster/log/download/:namespace/:name/", handler.HandleDownloadPodLog)
+	r.GET("/logs/*any", gin.WrapH(handler.CreateAttachHandler("/logs")))
+	r.GET("/log/:cluster/session/:namespace/:name/:container", handler.HandleGetPodLog)
+	r.GET("/log/:cluster/session/:namespace/:name/", handler.HandleGetPodLog)
+	r.GET("/log/:cluster/download/:namespace/:name/:container", handler.HandleDownloadPodLog)
+	r.GET("/log/:cluster/download/:namespace/:name/", handler.HandleDownloadPodLog)
 }
 
 func terminal(r *gin.Engine) {
@@ -69,6 +70,7 @@ func cluster(r *gin.Engine) {
 	api.DELETE("/delete/:id", handler.HandleDeleteCluster)
 	api.PUT("/update", handler.HandleUpdateCluster)
 	api.GET("/info/:id", handler.HandleGetCluster)
+
 }
 
 func user(r *gin.Engine) {
