@@ -45,6 +45,7 @@ export default function SearchBar(props) {
         }}
         onKeyDown={(e) => {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 onSearchResource(e.target.value)
             }
         }}    
