@@ -20,18 +20,21 @@ import (
 )
 
 func HandleGetNamespaces(c *gin.Context) {
-
+	var namespaces []string
 	client := managerK8SClient(c)
 	// 获取支持的namespace
 	namespace, err := client.CoreV1().Namespaces().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		kubeconfig := managerK8SKubeconfig(c)
-		context := kubeconfig.Contexts[kubeconfig.CurrentContext]
-		namespaces := []string{context.Namespace}
+
+		contxts := kubeconfig.Contexts
+		for _, v := range contxts {
+			namespaces = append(namespaces, v.Namespace)
+		}
 		c.JSON(200, namespaces)
 		return
 	}
-	var namespaces []string
+
 	for _, ns := range namespace.Items {
 		namespaces = append(namespaces, ns.Name)
 	}

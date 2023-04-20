@@ -34,6 +34,12 @@ function ConfigMapList() {
         dataFilter.setNameFilter(searchName);
         dataFilter.setPage(current + 1);
         const result = await list.listConfigmaps(namespace,dataFilter.toJson());
+        if(result.total === 0) {
+            setData([]);
+            setTotal(0);
+            setLoading(false);
+            return;
+        }
         setData(result.list.map(item => {
             return {
                 name: item.name,
