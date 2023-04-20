@@ -16,16 +16,33 @@ import { useState,useEffect,useContext } from 'react';
 import AddCluster from './AddCluster';
 import { setCurrentCluster,setCurrentClusterName,currentCluster } from '../../store/cluster';
 import { AppContext } from '../../App';
+import listHttp from '../../http/list';
+import { type } from '@testing-library/user-event/dist/type';
 
-function chooseClusterHandler(row,setCurrentChoose,setCluster) {
+function chooseClusterHandler(row,setCurrentChoose,setCluster,setNamespace,setNamespaces) {
   return {
     title: 'choose',
     icon: <BookmarkAddedOutlined />,
     handle: () => {
+        //获取namespace
+       
         setCurrentCluster(row.id);
-        setCurrentClusterName(row.name);
-        setCurrentChoose(row.id);
-        setCluster(row.id);
+        return new Promise((resolve,reject) => {
+          listHttp.listNamespace().then(res => {
+              setNamespaces(res);
+              setCurrentClusterName(row.name);
+              setCurrentChoose(row.id);
+              setNamespace(res[0]);
+              setCluster(row.id);
+              resolve({
+                msg: 'change success',
+                type: 'success'
+              });
+          }).catch(err => {
+            reject(err);
+          })
+        })
+       
     }
   }
 }
@@ -49,9 +66,9 @@ function deleteClusterHandler(row,setRows) {
 
 
 
-function createHandler(row,setRows,setCurrentChoose,setCluster) {
+function createHandler(row,setRows,setCurrentChoose,setCluster,setNamespace,setNamespaces) {
   return [
-    chooseClusterHandler(row,setCurrentChoose,setCluster),
+    chooseClusterHandler(row,setCurrentChoose,setCluster,setNamespace,setNamespaces),
     deleteClusterHandler(row,setRows),
   ]
 }
@@ -70,7 +87,7 @@ const getClusterList = async (setRows) => {
 }
 
 export default function Clusters() {
-    const {setCluster} = useContext(AppContext)
+    const {setCluster,setNamespace,setNamespaces} = useContext(AppContext)
     const [rows, setRows] = useState([])
     const [openAdd, setOpenAdd] = useState(false)
     const [currentChoose, setCurrentChoose] = useState(null)
@@ -123,7 +140,7 @@ export default function Clusters() {
               <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }}>{row.version}</TableCell>
               <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }}>{row.status}</TableCell>
               <TableCell sx={{ color: row.id === currentChoose ? 'white' : 'black' }} align='right' width={1}>
-                  <MoreVertBtn items={createHandler(row,setRows,setCurrentChoose,setCluster)} />
+                  <MoreVertBtn items={createHandler(row,setRows,setCurrentChoose,setCluster,setNamespace,setNamespaces)} />
               </TableCell>
             </TableRow>
           ))}

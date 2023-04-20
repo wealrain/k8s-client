@@ -10,21 +10,19 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SettingsOutlined from '@mui/icons-material/SettingsOutlined';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import { Select,MenuItem,FormControl,InputLabel } from '@mui/material';
+import { Select,MenuItem } from '@mui/material';
 import Menu from '../Menu';
 import Setting from '../Setting';
 import { currentClusterName } from '../../store/cluster';
-import listHttp from '../../http/list';
 import { AppContext } from '../../App';
 
 const drawerWidth = 240;
 
 function ResponsiveDrawer(props) {
   const { window } = props;
-  const {cluster,namespace, setNamespace} = React.useContext(AppContext);
+  const {namespace, setNamespace,namespaces} = React.useContext(AppContext);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [settingOpen, setSettingOpen] = React.useState(false);
-  const [namespaces, setNamespaces] = React.useState([]);
   
   const handleNamespaceChange = (event) => {
     setNamespace(event.target.value);
@@ -37,17 +35,6 @@ function ResponsiveDrawer(props) {
   const handleSettingToggle = () => {
     setSettingOpen(!settingOpen);
   };
-
-  const fetchNamespace = async () => {
-    let result = await listHttp.listNamespace();
-    setNamespace(result[0]);
-    setNamespaces(result);
-  } 
-
-  React.useEffect(() => {
-    fetchNamespace();
-  }, [cluster]);
-
 
   const drawer = (<Menu />)
 
@@ -90,8 +77,8 @@ function ResponsiveDrawer(props) {
           }}
         >
           {
-            namespaces.map((item) => {
-              return <MenuItem value={item}>{item}</MenuItem>
+            namespaces.map((item,index) => {
+              return <MenuItem value={item} key={index}>{item}</MenuItem>
             })
           }
           
