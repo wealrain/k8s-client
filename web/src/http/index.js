@@ -2,6 +2,7 @@ import axios from 'axios'
 import * as React from 'react'
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert from '@mui/material/Alert';
+import { userToken,removeUserToken } from '../store/token';
 
 class HttpRequest {
     constructor(config) {
@@ -24,6 +25,10 @@ class HttpRequest {
 
                 resolve(res.data);
             }).catch(err => {
+                if (err.response.status === 401) {
+                    // token失效，跳转到登录页面
+                    removeUserToken();
+                  }
                 if(options && options.needShowSuccessMsg) {
                     reject ({
                         msg: err.response.data.error,
@@ -46,6 +51,10 @@ class HttpRequest {
                 }
                 resolve(res.data);
             }).catch(err => {
+                if (err.response.status === 401) {
+                    // token失效，跳转到登录页面
+                    removeUserToken();
+                  }
                 if(options && options.needShowSuccessMsg) {
                     reject ({
                         msg: err.response.data.error,
@@ -68,6 +77,10 @@ class HttpRequest {
                 }
                 resolve(res.data);
             }).catch(err => {
+                if (err.response.status === 401) {
+                    // token失效，跳转到登录页面
+                    removeUserToken();
+                  }
                 if(options && options.needShowSuccessMsg) {
                     reject ({
                         msg: err.response.data.error,
@@ -91,6 +104,11 @@ class HttpRequest {
                 }
                 resolve(res.data);
             }).catch(err => {
+                if (err.response.status === 401) {
+                    // token失效，跳转到登录页面
+                    removeUserToken();
+                    
+                  }
                 if(options && options.needShowErrorMsg) {
                     reject ({
                         msg: err.response.data.error,
@@ -151,6 +169,17 @@ export function HttpProvider({children}) {
 const http = new HttpRequest({
     baseURL: '/api',
     timeout: 1000 * 60 * 5,
+});
+
+http.setRequestInterceptor((config) => {
+    // 在请求头中加入token
+    const token = userToken();
+    if(token) {
+        config.headers.Authorization = token;
+    }
+    return config;
+},(error) => {
+    return Promise.reject(error);
 });
 
 export default http;

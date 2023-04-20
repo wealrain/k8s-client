@@ -83,6 +83,11 @@ func user(r *gin.Engine) {
 	api.POST("/login", handler.HandleLogin)
 }
 
+func token(r *gin.Engine) {
+	api := r.Group("/token")
+	api.POST("/create", handler.HandleCreateToken)
+}
+
 func Start(addr string) {
 	// Start the server
 	r := gin.Default()
@@ -97,6 +102,8 @@ func Start(addr string) {
 	})
 
 	r.Use(handler.Recover)
+	// 拦截所有请求，验证token，除了登录接口
+	r.Use(handler.AuthMiddleware)
 	cluster(r)
 	user(r)
 	list(r)
@@ -104,5 +111,6 @@ func Start(addr string) {
 	op(r)
 	log(r)
 	terminal(r)
+	token(r)
 	r.Run(addr)
 }
