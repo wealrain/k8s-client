@@ -13,8 +13,13 @@ import EndpointList from '../page/endpointList';
 import EventList from '../page/eventList';
 import Edit from '../page/edit';
 import Log from '../page/log';
+import Create from '../page/create';
 
 let router = createBrowserRouter([
+    {
+        path: '/create',
+        Component: Create,
+    },
     {
         path: '/edit/:kind/:namespace/:name',
         Component: Edit,

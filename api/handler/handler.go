@@ -54,6 +54,7 @@ func HandleUpdate(c *gin.Context) {
 	data := runtime.Unknown{}
 	err := c.BindJSON(&data)
 	if err != nil {
+		log.Printf("error: %v", err)
 		c.JSON(400, gin.H{"error": "Bad Request"})
 		return
 	}
@@ -61,7 +62,7 @@ func HandleUpdate(c *gin.Context) {
 
 	if err != nil {
 		log.Printf("error: %v", err)
-		c.JSON(500, gin.H{"error": "Internal Server Error"})
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
 

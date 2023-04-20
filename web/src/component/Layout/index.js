@@ -8,6 +8,7 @@ import Drawer from '@mui/material/Drawer';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import SettingsOutlined from '@mui/icons-material/SettingsOutlined';
+import BorderColorOutlined from '@mui/icons-material/BorderColorOutlined';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { Select,MenuItem } from '@mui/material';
@@ -17,6 +18,10 @@ import { currentClusterName } from '../../store/cluster';
 import { AppContext } from '../../App';
 
 const drawerWidth = 240;
+
+function openEdit(){
+  window.open("/create","_blank")
+}
 
 function ResponsiveDrawer(props) {
   const { window } = props;
@@ -35,6 +40,7 @@ function ResponsiveDrawer(props) {
   const handleSettingToggle = () => {
     setSettingOpen(!settingOpen);
   };
+
 
   const drawer = (<Menu />)
 
@@ -83,6 +89,13 @@ function ResponsiveDrawer(props) {
           }
           
         </Select>
+        <IconButton
+                size="large"
+                color="inherit"
+                onClick={openEdit}
+              >
+                <BorderColorOutlined />
+          </IconButton>
           <IconButton
                 size="large"
                 color="inherit"

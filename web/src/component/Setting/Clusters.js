@@ -17,7 +17,6 @@ import AddCluster from './AddCluster';
 import { setCurrentCluster,setCurrentClusterName,currentCluster } from '../../store/cluster';
 import { AppContext } from '../../App';
 import listHttp from '../../http/list';
-import { type } from '@testing-library/user-event/dist/type';
 
 function chooseClusterHandler(row,setCurrentChoose,setCluster,setNamespace,setNamespaces) {
   return {
