@@ -4,20 +4,14 @@ import {
     Drawer,
     Box, 
     Toolbar,
-    Table,
-    TableContainer,
-    TableHead,
-    TableRow,
-    TableCell,
-    TableBody,
-    Paper,
+   
 } from "@mui/material";
-import DetailTypography from "../ext/DetailTypography";
-import LinkTypography from "../ext/LinkTypography";
-import DetailLine from "../ext/DetailLine";
-import ArrayTypography from "../ext/ArrayTypography";
-import TitleBar from "../ext/TitleBar";
-import DetailBar from "../ext/DetailBar";
+import DetailTypography from "../Typography/DetailTypography";
+import LinkTypography from "../Typography/LinkTypography";
+import DetailLine from "../Typography/DetailLine";
+import ArrayTypography from "../Typography/ArrayTypography"
+import TitleBar from "../Typography/TitleBar";
+import DetailBar from "../Typography/DetailBar";
 import CommonHandler from "../../page/common";
 import EventInfo from './EventInfo';
 import ConfigReader from '../ConfigReader';

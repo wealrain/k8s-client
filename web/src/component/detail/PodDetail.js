@@ -4,13 +4,13 @@ import {
     Toolbar
 } from "@mui/material";
 import * as React from "react";
-import DetailTypography from "../ext/DetailTypography";
-import LinkTypography from "../ext/LinkTypography";
-import DetailLine from "../ext/DetailLine";
-import StatusTypography from "../ext/StatusTypography";
-import ArrayTypography from "../ext/ArrayTypography";
-import TitleBar from "../ext/TitleBar";
-import DetailBar from "../ext/DetailBar";
+import DetailTypography from "../Typography/DetailTypography";
+import LinkTypography from "../Typography/LinkTypography";
+import DetailLine from "../Typography/DetailLine";
+import StatusTypography from "../Typography/StatusTypography";
+import ArrayTypography from "../Typography/ArrayTypography";
+import TitleBar from "../Typography/TitleBar";
+import DetailBar from "../Typography/DetailBar";
 import CommonHandler from "../../page/common";
 import http from '../../http/detail';
 import EventInfo from "./EventInfo";

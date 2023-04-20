@@ -1,5 +1,5 @@
 import * as React from 'react';
-import DetailTypography from "../ext/DetailTypography";
+import DetailTypography from "./DetailTypography";
 import { Grid ,Divider} from '@mui/material';
 
 export default function DetailLine(props) {
